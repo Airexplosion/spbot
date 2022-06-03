@@ -36,5 +36,5 @@ async def _(event: Event):  # M3
             await bot.send(event, "哈，是空的。")
             await bot.send(event, "侥幸逃过一劫呢，哼。剩余弹仓：" + str(len(mag)))
 
-
+#暂时这样！
 bot.run(host='127.0.0.1', port=8080)  # M6
