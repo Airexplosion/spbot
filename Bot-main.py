@@ -23,17 +23,11 @@ async def _(event: Event):  # M3
             await bot.send(event, "你已知道，这是必死之局。")
             await bot.send(event, "砰，你死了。")
             await bot.send(event, "已重新装填子弹。")
-            # t = random.randint(60,300)
-            # await bot.set_group_ban(int(event[group_id]),int(event[sender[user_id]]),t)
-            # await bot.send(event, '禁言时间：'+ str(t) +'min')
             mag = [1, 2, 3, 4, 5, 6]
             rem = 5
         elif re == 6:
             await bot.send(event, "砰，你死了。")
             await bot.send(event, "已重新装填子弹。")
-            # t = random.randint(60,300)
-            # await bot.set_group_ban(int(event[group_id]),int(event[sender[user_id]]),t)
-            # await bot.send(event, '禁言时间：'+ str(t) +'min')
             mag = [1, 2, 3, 4, 5, 6]
             rem = 5
         elif re != 6:
