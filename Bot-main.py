@@ -66,8 +66,15 @@ async def _(event: Event):  # M3
         elif re != 6:
             del mag[int(bul)]
             await bot.send(event, "“咔嚓” 哈，是空的。侥幸逃过一劫呢，哼。剩余弹仓：" + str(len(mag)))
-    elif msg == '俄罗斯轮盘死':
-        await bot.send(event, "砰，你死了。")
+    elif msg == '美国轮盘赌':
+        if await _contrast(event):
+            ban = random.randint(60, 300)
+            await bot.set_group_ban(group_id=event['group_id'], user_id=event['user_id'], duration=int(ban))
+            await bot.send(event, "啊，怎么是半自动手枪……砰，你死了。距离下次复活还有：" + str(int(ban / 60)) + "分")
+            await bot.send(event, "已重新装填子弹。")
+        elif not await _contrast(event):
+            await bot.send(event, "啊，怎么是半自动手枪……砰，你死了。呃，好像打不穿你的防弹衣呢……")
+            await bot.send(event, "已重新装填子弹。")
     elif msg == '/占卜':
         await bot.send(event, "占你妈个头，滚！")
 
