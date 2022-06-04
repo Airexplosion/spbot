@@ -30,10 +30,7 @@ async def _contrast(event: Event):    # 权限判断函数
 async def _(event: Event):  # M3
     global rem, mag
     msg = event['message']
-    if msg.startswith('.'):
-        tmsg = event['message'][1:]
-        await bot.send(event, '你发了：' + tmsg)  # M4
-    elif msg == '俄罗斯轮盘赌':
+    if msg == '俄罗斯轮盘赌':
         bul = random.randint(0, rem)
         rem = int(rem) - 1
         re = mag[int(bul)]
