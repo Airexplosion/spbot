@@ -80,13 +80,13 @@ async def _(event: Event):  # M3
 
 
 @bot.on_request('group', 'friend')
-def handle_request(event):
+async def handle_request(event):
     return {'approve': True}
 
 
 @bot.on_notice('group_increase')  # 如果插件版本是 3.x，这里需要使用 @bot.on_event
-def handle_group_increase(event):
-    bot.send(event, '欢迎新人～')  # 发送欢迎新人
+async def handle_group_increase(event):
+    await bot.send(event, '欢迎新人～')  # 发送欢迎新人
 
 
 # 暂时这样！
