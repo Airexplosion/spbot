@@ -41,6 +41,8 @@ async def _(event: Event):  # M3
             await bot.send(event, "“咔嚓”")
             await bot.send(event, "哈，是空的。")
             await bot.send(event, "侥幸逃过一劫呢，哼。剩余弹仓：" + str(len(mag)))
+    elif msg == '俄罗斯轮盘死':
+        await bot.send(event, "砰，你死了。")
     elif msg == '/占卜':
         await bot.send(event, "占你妈个头，滚！")
 
