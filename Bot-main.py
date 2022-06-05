@@ -162,7 +162,26 @@ async def zhan(event: Event, *args):
 
 
 # 群聊消息处理
-@bot.on_message('group', 'private')
+@bot.on_message('group')
+async def _(event: Event):
+    msg: str = event['message']
+    sp = msg.split(maxsplit=1)
+    if not sp:
+        return
+    cmd, *args = sp
+    arg = ''.join(args)
+    only_handler = only_commands.get(cmd)
+    start_handler = start_commands.get(cmd)
+    if only_handler and not arg:  # 判断是否有后续指令
+        return await only_handler(event)
+    elif start_handler:  # 判断是否在前端匹配的注册库内
+        return await start_handler(event, arg)
+    else:
+        return
+
+
+#  私聊消息处理
+@bot.on_message('private')
 async def _(event: Event):
     msg: str = event['message']
     sp = msg.split(maxsplit=1)
