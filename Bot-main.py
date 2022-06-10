@@ -1,6 +1,5 @@
 from aiocqhttp import CQHttp, Event
 import random
-from pprint import pprint
 
 bot = CQHttp()
 
