@@ -1,3 +1,5 @@
+from pprint import pprint
+
 from aiocqhttp import CQHttp, Event
 import random
 
@@ -9,26 +11,32 @@ _mag = [1, 2, 3, 4, 5, 6]
 _rem = 5
 
 # 前缀匹配和完全匹配指令的注册字典
-only_commands = {}
-start_commands = {}
+on_commands = {}
 
 
-# 命令处理函数装饰器 完全匹配
-def only_command(name):
+# 命令处理函数装饰器
+def on_command(name):
     def decorator(func):
-        only_commands[name] = func
+        on_commands[name] = func
         return func
 
     return decorator
 
 
-# 命令处理函数装饰器 前缀匹配
-def start_command(name):
-    def decorator(func):
-        start_commands[name] = func
-        return func
+#  判断是群聊消息还是私聊消息group_or_private函数
+def group_or_private(event: Event):
+    place = False
+    if event["message_type"] == "private":
+        place = 1
+    elif event["message_type"] == "group":
+        place = 2
+    return place
 
-    return decorator
+
+#  获取群内成员昵称group_card
+async def group_card(event: Event):
+    card = (await bot.get_group_member_info(group_id=event["group_id"], user_id=event["user_id"]))["card"]
+    return card
 
 
 # 机器人群聊权限判断函数_contrast 如果是非群聊 直接返回False
@@ -53,7 +61,7 @@ async def _contrast(event: Event):
 
 
 # 俄罗斯轮盘赌 单发
-@only_command('俄罗斯轮盘赌')
+@on_command('俄罗斯轮盘赌')
 async def r_only_gun(event: Event, *args):
     global _mag, _rem
     bul = random.randint(0, _rem)
@@ -92,7 +100,7 @@ async def r_only_gun(event: Event, *args):
 
 
 # 俄罗斯轮盘赌 多发
-@start_command('俄罗斯轮盘赌')
+@on_command('俄罗斯轮盘赌')
 async def r_more_gun(event: Event, *args):
     try:
         a = int(args[0])
@@ -140,7 +148,7 @@ async def r_more_gun(event: Event, *args):
 
 
 # 美国轮盘赌
-@only_command('美国轮盘赌')
+@on_command('美国轮盘赌')
 async def a_gun(event: Event, *args):
     if await _contrast(event):
         ban = random.randint(60, 300)
@@ -154,33 +162,25 @@ async def a_gun(event: Event, *args):
 
 
 # 占卜
-@only_command('/占卜')
+@on_command('/占卜')
 async def zhan(event: Event, *args):
     await bot.send(event, "占你妈个头，滚！")
     return
 
 
-# 群聊消息处理
-@bot.on_message('group')
-async def _(event: Event):
-    msg: str = event['message']
-    sp = msg.split(maxsplit=1)
-    if not sp:
-        return
-    cmd, *args = sp
-    arg = ''.join(args)
-    only_handler = only_commands.get(cmd)
-    start_handler = start_commands.get(cmd)
-    if only_handler and not arg:  # 判断是否有后续指令
-        return await only_handler(event)
-    elif start_handler:  # 判断是否在前端匹配的注册库内
-        return await start_handler(event, arg)
+# rd骰点
+@on_command('.rd')
+async def _(event: Event, *args):
+    if group_or_private(event) == 1:
+        await bot.send(event, '你的本次骰点值为：D100=' + str(random.randint(1, 100)))
+    elif group_or_private(event) == 2:
+        await bot.send(event, str(await group_card(event))  + '掷骰：D100=' + str(random.randint(1, 100)))
     else:
-        return
+        await bot.send(event, str(args))
 
 
-#  私聊消息处理
-@bot.on_message('private')
+# 消息处理
+@bot.on_message('group', 'private')
 async def _(event: Event):
     msg: str = event['message']
     sp = msg.split(maxsplit=1)
@@ -188,24 +188,21 @@ async def _(event: Event):
         return
     cmd, *args = sp
     arg = ''.join(args)
-    only_handler = only_commands.get(cmd)
-    start_handler = start_commands.get(cmd)
-    if only_handler and not arg:  # 判断是否有后续指令
+    only_handler = on_commands.get(cmd)
+    if only_handler and not arg:
         return await only_handler(event)
-    elif start_handler:  # 判断是否在前端匹配的注册库内
-        return await start_handler(event, arg)
     else:
         return
 
 
 # 好友邀请同意
 @bot.on_request('group', 'friend')
-async def handle_request(event):
+async def handle_request(event: Event):
     return {'approve': True}
 
 
 @bot.on_notice('group_increase')  # 如果插件版本是 3.x，这里需要使用 @bot.on_event
-async def handle_group_increase(event):
+async def handle_group_increase(event: Event):
     await bot.send(event, '欢迎新人～')  # 发送欢迎新人
 
 
