@@ -156,7 +156,6 @@ async def a_gun(event: Event, *args):
 # 占卜
 @only_command('/占卜')
 async def zhan(event: Event, *args):
-    se = event.get()
     await bot.send(event, "占你妈个头，滚！")
     return
 
